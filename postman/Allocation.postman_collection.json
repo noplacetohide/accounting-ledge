@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "74ae6634-0235-4b7e-bc5c-b7c5e690659e",
+		"name": "Allocation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8288583",
+		"_collection_link": "https://solar-equinox-466926.postman.co/workspace/Berafarm~9c6ca63b-c926-4b89-a43c-9b2a57a858fc/collection/8288583-74ae6634-0235-4b7e-bc5c-b7c5e690659e?action=share&source=collection_link&creator=8288583"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Demo User\",\n    \"email\": \"demouser@gmail.com\",\n    \"password\": \"Pass@User\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"222112\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Investment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmU5MmNlYS1jZjExLTQzNTMtYjAyMy1mMGVlMGE3ZGEzZGUiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ1MjA3NTk1LCJleHAiOjE3NDUyMTExOTV9.OQE40eTz-EkTYEC_F7P4h3KNY47WIR23VWgveCMXfog",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"test\",\n    \"amount\":100,\n    \"type\": \"MUTUAL_FUND\",\n    \"start_date\":\"2025-04-20T00:00:00.000Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/investments/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"investments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "investments",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmU5MmNlYS1jZjExLTQzNTMtYjAyMy1mMGVlMGE3ZGEzZGUiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ1MjM1NTEzLCJleHAiOjE3NDU4NDAzMTN9.qpcy3ljFJq0oz4cv-ygX2yTpHhkK4Kpqu6SUX8JlfEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/investments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"investments"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2024-01-01",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2024-12-31",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "5",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "investments/fy/2022",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmU5MmNlYS1jZjExLTQzNTMtYjAyMy1mMGVlMGE3ZGEzZGUiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ1MjM1NTEzLCJleHAiOjE3NDU4NDAzMTN9.qpcy3ljFJq0oz4cv-ygX2yTpHhkK4Kpqu6SUX8JlfEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/investments/fy/2024",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"investments",
+						"fy",
+						"2024"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "investments/investment-stats",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmU5MmNlYS1jZjExLTQzNTMtYjAyMy1mMGVlMGE3ZGEzZGUiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ1MjM1NTEzLCJleHAiOjE3NDU4NDAzMTN9.qpcy3ljFJq0oz4cv-ygX2yTpHhkK4Kpqu6SUX8JlfEY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/v1/investments/investment-stats",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"investments",
+						"investment-stats"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
