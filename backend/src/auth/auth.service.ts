@@ -33,7 +33,6 @@ export class AuthService {
 
 
         return { result, accountOpeningTransaction };
-        // return { result, accountOpeningTransaction };
     }
 
     async login(loginDto: LoginDto) {

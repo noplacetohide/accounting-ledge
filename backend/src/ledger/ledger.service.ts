@@ -6,7 +6,7 @@ import { CreateTransactionDto } from 'src/transactions/dto/create-transaction.dt
 import { TransactionQueryDto } from 'src/transactions/dto/transaction-query.dto';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { PaginatedResponse } from 'src/types/ledger';
-import { Repository, getManager, QueryBuilder, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 
 
 @Injectable()
@@ -24,7 +24,6 @@ export class LedgerService {
         let { description, sourceAccount, destinationAccount, amount } = createTransactionDto;
         sourceAccount = sourceAccount?.trim();
         destinationAccount = destinationAccount?.trim();
-        // Validate that there are at least two entries
         if (sourceAccount === destinationAccount) {
             throw new BadRequestException('Source and destination accounts must be different.');
         }

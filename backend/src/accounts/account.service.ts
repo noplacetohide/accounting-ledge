@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
-// import { User } from './entities/user.entity';
-// import { CreateUserDto } from './dto/create-user.dto';
 import { Account } from './entities/account.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
 
@@ -20,7 +18,6 @@ export class AccountsService {
         const accountNumber = result[0].nextval.toString().padStart(12, '0');
 
         const account = this.accountsRepository.create({ ...createUserDto, accountNumber });
-        console.log("account ", account)
         return this.accountsRepository.save(account);
     }
 
