@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { humanize } from 'underscore.string';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { BadgeDollarSign, NotebookText, SlidersHorizontal } from 'lucide-react';
 import { z } from 'zod';
 
@@ -37,6 +37,7 @@ import { formatMoney, getQuery } from '@/lib/transactionHelpers';
 import { Badge } from '@/components/ui/badge';
 import { ProfileType } from '@/types/user';
 import { TransactionResponse } from '@/types/transaction';
+import { DatePicker } from '@/components/base/DatePicker';
 
 const FORM_INIT_OBJECT = {
     sourceAccount: "",
@@ -50,6 +51,11 @@ const INIT_PAGINATION_STATE = {
     limit: 10,
     page: 1,
     totalPages: 0
+};
+
+const INIT_FILTERS_STATE = {
+    startDate: '',
+    endDate: ''
 };
 
 export const sendMoneyFormSchema = z.object({
@@ -68,6 +74,7 @@ export default function Ledger({ data: userProfile }: ProfileType) {
     const [userTransactionHistory, setUserTransactionHistory] = useState([]);
     const [userBalance, setUserBalance] = useState({ balance: 0 });
     const [pagination, setPagination] = useState(INIT_PAGINATION_STATE);
+    const [filters, setFilters] = useState(INIT_FILTERS_STATE);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const form = useForm({
@@ -77,8 +84,7 @@ export default function Ledger({ data: userProfile }: ProfileType) {
 
     const fetchUserBalance = async () => {
         try {
-            const query = getQuery(pagination);
-            const { data } = await api.get(`/api/v1/ledger/accounts/balance?${query}`);
+            const { data } = await api.get(`/api/v1/ledger/accounts/balance`);
             console.log("data?.data ", data?.data)
             setUserBalance(data?.data || []);
         } catch (error) {
@@ -87,7 +93,7 @@ export default function Ledger({ data: userProfile }: ProfileType) {
     }
     const fetchUserTransactionHistory = async () => {
         try {
-            const query = getQuery(pagination);
+            const query = getQuery({ ...pagination, ...filters });
             const { data } = await api.get(`/api/v1/ledger/transactions?${query}`);
             setUserTransactionHistory(data?.data || []);
             setPagination(data?.pagination || INIT_PAGINATION_STATE);
@@ -98,12 +104,8 @@ export default function Ledger({ data: userProfile }: ProfileType) {
 
     useEffect(() => {
         fetchUserBalance();
-    }, [pagination.page]);
-
-
-    useEffect(() => {
         fetchUserTransactionHistory();
-    }, [pagination.page]);
+    }, [pagination.page, filters.endDate, filters.startDate]);
 
     async function onSubmit(formState: z.infer<typeof sendMoneyFormSchema>) {
         try {
@@ -242,7 +244,7 @@ export default function Ledger({ data: userProfile }: ProfileType) {
         return (
             <TableRow key={transaction.id} className='text-sm'>
                 <TableCell className='text-sm'>{index + 1}</TableCell>
-                <TableCell className='text-sm'>{transaction?.transactionDate ? moment(transaction?.transactionDate).format('lll') : '-'}</TableCell>
+                <TableCell className='text-sm'>{transaction?.transactionDate ? moment(transaction?.transactionDate).tz('Asia/Kolkata').format('lll') : '-'}</TableCell>
                 <TableCell><Badge className={`${type ? 'bg-orange-400' : 'bg-green-600'} rounded`}>{humanize(txn?.type || '-')}</Badge></TableCell>
                 <TableCell>{formatMoney(txn?.amount)}</TableCell>
                 <TableCell>{transaction?.id || '-'}</TableCell>
@@ -292,47 +294,58 @@ export default function Ledger({ data: userProfile }: ProfileType) {
                     </div>
                     {openFilters && (
                         <div className="p-4 border-b flex justify-center items-center gap-4">
-                            <h3 className="font-bold">Your Transactions</h3>
-                            <Button onClick={() => { }}><SlidersHorizontal /></Button>
+                            <DatePicker
+                                value={filters.startDate}
+                                onChange={(value) => setFilters({ ...filters, startDate: value })}
+                                labelClassName="font-semibold text-gray-600 text-sm"
+                                label="Start Date"
+                                placeholder='Txn Start Date' />
+                            <DatePicker
+                                value={filters.endDate}
+                                onChange={(value) => setFilters({ ...filters, endDate: value })}
+                                labelClassName="font-semibold text-gray-600 text-sm"
+                                label="End Date"
+                                placeholder='Txn End Date' />
                         </div>
                     )}
                     <div className="p-4">
-                        {(!!userTransactionHistory?.length) && (
-                            <Table>
-                                <TableCaption>
-                                    <Pagination>
-                                        <PaginationContent>
-                                            <PaginationItem>
-                                                <PaginationPrevious className={pagination.page == 1 ? 'cursor-not-allowed' : 'cursor-pointer'} onClick={() => handlePreviousClick()} />
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationLink isActive>
-                                                    {pagination.page}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationNext className={pagination.page >= pagination.totalPages ? 'cursor-not-allowed' : 'cursor-pointer'} onClick={() => handleNextClick()} />
-                                            </PaginationItem>
-                                        </PaginationContent>
-                                    </Pagination>
-                                </TableCaption>
-                                <TableHeader>
-                                    <TableRow className='font-bold text-gray-600'>
-                                        <TableHead>#</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Txn Type</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Txn id</TableHead>
-                                        <TableHead>Txn Note</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {userTransactionHistory.map((txn: TransactionResponse, index: number) => (
-                                        renderTxnRow(txn, index)
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        )}
+                        {(!!userTransactionHistory?.
+                            length) && (
+                                <Table>
+                                    <TableCaption>
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious className={pagination.page == 1 ? 'cursor-not-allowed' : 'cursor-pointer'} onClick={() => handlePreviousClick()} />
+                                                </PaginationItem>
+                                                <PaginationItem>
+                                                    <PaginationLink isActive>
+                                                        {pagination.page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                                <PaginationItem>
+                                                    <PaginationNext className={pagination.page >= pagination.totalPages ? 'cursor-not-allowed' : 'cursor-pointer'} onClick={() => handleNextClick()} />
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </TableCaption>
+                                    <TableHeader>
+                                        <TableRow className='font-bold text-gray-600'>
+                                            <TableHead>#</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Txn Type</TableHead>
+                                            <TableHead>Amount</TableHead>
+                                            <TableHead>Txn id</TableHead>
+                                            <TableHead>Txn Note</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {userTransactionHistory.map((txn: TransactionResponse, index: number) => (
+                                            renderTxnRow(txn, index)
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
                         {!(!!userTransactionHistory?.length) && (
                             <p className='text-center text-xl text-gray-700 font-medium'>No Transaction Found</p>
                         )}
